@@ -21,6 +21,8 @@ from sqlalchemy.schema import Column
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.sql.expression import func
 from flask.ext.login import UserMixin
 from flask import current_app
 
@@ -103,3 +105,7 @@ class User(db.Model, DomainObject, UserMixin):
             return list(set(default).union(set(extra)))
         else:
             return default
+
+    @hybrid_property
+    def is_name_palindrome(self):
+        return self.name == func.reverse(self.name)
