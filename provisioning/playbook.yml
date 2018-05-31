@@ -4,10 +4,10 @@
   become: true
   become_method: sudo
   vars:
-    pybossa_user: "vagrant"
+    pybossa_user: "ubuntu"
     pybossa_path: "/vagrant"
-    vagrant_home: "/home/vagrant"
-    virtualenv_path: "/home/vagrant/pybossa-env"
+    vagrant_home: "/home/ubuntu"
+    virtualenv_path: "/home/ubuntu/pybossa-env"
     redis_host: "127.0.0.1"
     redis_port: "6379"
     schedule_interval: "60"
@@ -167,7 +167,7 @@
       lineinfile:
         dest={{vagrant_home}}/.bashrc
         line=". {{virtualenv_path}}/bin/activate"
-        owner=vagrant
+        owner={{pybossa_user}}
         state=present
         insertafter=EOF
         create=yes
@@ -178,7 +178,7 @@
       lineinfile:
         dest={{vagrant_home}}/.bashrc
         line="redis-server {{pybossa_path}}/contrib/sentinel.conf --sentinel"
-        owner=vagrant
+        owner={{pybossa_user}}
         state=present
         insertafter=EOF
         create=yes     
@@ -187,7 +187,7 @@
       lineinfile:
         dest={{vagrant_home}}/.bashrc
         line="cd {{pybossa_path}}"
-        owner=vagrant
+        owner={{pybossa_user}}
         state=present
         insertafter=EOF
 

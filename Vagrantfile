@@ -5,6 +5,8 @@
 
 VAGRANTFILE_API_VERSION = "2"
 
+require "vagrant-aws"
+
 # Ansible install script for Ubuntu
 $ansible_install_script = <<SCRIPT
 export DEBIAN_FRONTEND=noninteractive
@@ -25,16 +27,23 @@ ansible-playbook -u vagrant /vagrant/provisioning/playbook.yml -i /vagrant/provi
 SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "bento/ubuntu-16.04"
-  config.vm.provider "virtualbox" do |v|
-    v.memory = 1024
+  config.vm.box = "aws-dummy"
+  config.vm.provider "aws" do |aws, override|
+    aws.instance_type = "t2.micro"
+    aws.access_key_id = ENV["AWS_ACCESS_KEY_ID"]
+    aws.secret_access_key = ENV["AWS_SECRET_ACCESS_KEY"]
+    aws.keypair_name = "pybossa-admin"
+    aws.region = "us-east-2"
+    aws.ami = "ami-6a003c0f"
+    aws.security_groups = ["pybossa"]
+    override.ssh.username = "ubuntu"
+    override.ssh.private_key_path = "~/.ssh/pybossa-admin.pem"
   end
-  config.vm.network :forwarded_port, host: 5000, guest: 5000
-  config.vm.network :forwarded_port, host: 5001, guest: 5001
   # turn off warning message `stdin: is not a tty error`
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
   # be sure that there  is Ansible for local provisioning
   config.vm.provision "shell", inline: $ansible_install_script
   # do the final Ansible local provisioning
   config.vm.provision "shell", inline: $ansible_local_provisioning_script
+  config.vm.synced_folder ".", "/vagrant", disabled: false, type: 'rsync'
 end
