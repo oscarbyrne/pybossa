@@ -57,6 +57,7 @@ from token import TokenAPI
 from result import ResultAPI
 from project_stats import ProjectStatsAPI
 from helpingmaterial import HelpingMaterialAPI
+from palindrome import PalindromeAPI
 from pybossa.core import project_repo, task_repo
 from pybossa.contributions_guard import ContributionsGuard
 from pybossa.auth import jwt_authorize_project
@@ -110,6 +111,7 @@ register_api(VmcpAPI, 'api_vmcp', '/vmcp', pk='oid', pk_type='int')
 register_api(FavoritesAPI, 'api_favorites', '/favorites',
              pk='oid', pk_type='int')
 register_api(TokenAPI, 'api_token', '/token', pk='token', pk_type='string')
+register_api(PalindromeAPI, 'api_palindrome', '/palindrome', pk='oid', pk_type='int')
 
 
 @jsonpify
